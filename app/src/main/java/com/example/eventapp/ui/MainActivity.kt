@@ -1,12 +1,12 @@
 package com.example.eventapp.ui
 
 import android.os.Bundle
-import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.commit
 import com.example.eventapp.R
 import com.example.eventapp.databinding.ActivityMainBinding
 import com.example.eventapp.ui.fragment.EventActiveFragment
@@ -20,6 +20,8 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setSupportActionBar(binding.includeToolbar.toolbar)
+
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -37,7 +39,9 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
 
-        
+
+
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.frame_container)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(
@@ -47,6 +51,22 @@ class MainActivity : AppCompatActivity() {
                 systemBars.bottom,
             )
             insets
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_toolbar, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_search -> {
+
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
         }
     }
 }

@@ -33,13 +33,13 @@ class EventActiveFragment : Fragment(), View.OnClickListener {
             .findViewById<ProgressBar>(R.id.progressBar)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        // Observe the LiveData from ViewModel
+
         eventActiveModel.listEvent.observe(viewLifecycleOwner, Observer { eventList ->
             val adapter = EventAdapter(eventList)
             recyclerView.adapter = adapter
         })
 
-        // Loading indicator if necessary
+      
         eventActiveModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
             if (isLoading) {
                 progressBar.visibility = View.VISIBLE
