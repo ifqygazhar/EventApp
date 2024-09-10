@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/eventActiveFragment">
+
+    <fragment
+        android:id="@+id/eventActiveFragment"
+        android:name="com.example.eventapp.ui.fragment.EventActiveFragment"
+        android:label="fragment_event_active"
+        tools:layout="@layout/fragment_event_active" />
+    <fragment
+        android:id="@+id/eventNonActiveFragment"
+        android:name="com.example.eventapp.ui.fragment.EventNonActiveFragment"
+        android:label="fragment_event_non_active"
+        tools:layout="@layout/fragment_event_non_active" />
+</navigation>
