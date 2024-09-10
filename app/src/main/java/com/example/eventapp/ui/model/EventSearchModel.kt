@@ -11,10 +11,17 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class EventNonActiveModel : ViewModel() {
-
+class EventSearchModel : ViewModel() {
     companion object {
-        private const val TAG = "EventActiveModel"
+        private const val TAG = "EventSearchModel"
+    }
+
+    private val _searchQuery = MutableLiveData<String>()
+    val searchQuery: LiveData<String> = _searchQuery
+
+    // Setter untuk query pencarian
+    fun setSearchQuery(query: String) {
+        _searchQuery.value = query
     }
 
     private val _listEvent = MutableLiveData<List<ListEventsItem>>()
@@ -23,13 +30,9 @@ class EventNonActiveModel : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    init {
-        fetchNonActiveEvent()
-    }
-
-    private fun fetchNonActiveEvent() {
+    fun fetchSearchEvent(query: String) {
         _isLoading.value = true
-        val client = ApiConfig.getApiService().getEventNonActive()
+        val client = ApiConfig.getApiService().getEventSearch(-1, query)
         client.enqueue(object : Callback<EventResponse> {
             override fun onResponse(
                 call: Call<EventResponse>,
@@ -38,7 +41,6 @@ class EventNonActiveModel : ViewModel() {
                 val responseBody = response.body()
                 _isLoading.value = false
                 if (response.isSuccessful) {
-
                     _listEvent.value = responseBody?.listEvents
                 } else {
                     Log.e(TAG, "onFailure: ${response.message()}")
@@ -48,9 +50,7 @@ class EventNonActiveModel : ViewModel() {
             override fun onFailure(call: Call<EventResponse>, t: Throwable) {
                 _isLoading.value = false
                 Log.e(TAG, "onFailure: ${t.message.toString()}")
-
             }
         })
     }
 }
-

@@ -1,5 +1,6 @@
 package com.example.eventapp.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -62,7 +63,8 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_search -> {
-
+                val intent = Intent(this, SearchActivity::class.java)
+                startActivity(intent)
                 true
             }
 

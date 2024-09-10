@@ -10,8 +10,14 @@ import com.example.eventapp.R
 import com.example.eventapp.data.response.ListEventsItem
 import com.example.eventapp.util.LoadImage
 
-class EventAdapter(private val eventList: List<ListEventsItem>) :
+class EventAdapter(private var eventList: List<ListEventsItem>) :
     RecyclerView.Adapter<EventAdapter.EventViewHolder>() {
+
+    // Method to update data in the adapter
+    fun setData(newEventList: List<ListEventsItem>) {
+        eventList = newEventList
+        notifyDataSetChanged()  // Notify RecyclerView that data has changed
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_event, parent, false)
@@ -41,7 +47,6 @@ class EventAdapter(private val eventList: List<ListEventsItem>) :
             tvCategory.text = event.category
             tvQouta.text = event.quota.toString()
             tvRegister.text = event.registrants.toString()
-
 
             LoadImage.load(itemView.context, ivEventCover, event.mediaCover, R.color.placeholder)
         }

@@ -14,7 +14,7 @@ import retrofit2.Response
 class EventActiveModel : ViewModel() {
 
     companion object {
-        private const val TAG = "EventModel"
+        private const val TAG = "EventActiveModel"
     }
 
     private val _listEvent = MutableLiveData<List<ListEventsItem>>()
