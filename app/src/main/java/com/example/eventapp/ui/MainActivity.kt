@@ -10,6 +10,7 @@ import androidx.fragment.app.commit
 import com.example.eventapp.R
 import com.example.eventapp.databinding.ActivityMainBinding
 import com.example.eventapp.ui.fragment.EventActiveFragment
+import com.example.eventapp.ui.fragment.EventNonActiveFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -19,25 +20,24 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        
-        val eventActiveFragment = EventActiveFragment()
-        val fragmentManager = supportFragmentManager
-        val fragment = fragmentManager.findFragmentByTag(EventActiveFragment::class.java.simpleName)
 
-        if (fragment !is EventActiveFragment) {
-            Log.d(
-                "EventActiveFragment",
-                "Fragment Name :" + EventActiveFragment::class.java.simpleName
-            )
-            fragmentManager.commit {
-                add(
-                    R.id.frame_container,
-                    eventActiveFragment,
-                    EventActiveFragment::class.java.simpleName
-                )
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment, EventActiveFragment())
+                .commit()
+        }
+        binding.bottomBar.setOnItemSelectedListener {
+            val selectedFragment = when (it) {
+                0 -> EventActiveFragment()
+                1 -> EventNonActiveFragment()
+                else -> EventActiveFragment()
             }
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment, selectedFragment)
+                .commit()
         }
 
+        
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.frame_container)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(

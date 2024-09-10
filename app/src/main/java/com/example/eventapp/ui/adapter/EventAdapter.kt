@@ -47,4 +47,3 @@ class EventAdapter(private val eventList: List<ListEventsItem>) :
         }
     }
 }
-
