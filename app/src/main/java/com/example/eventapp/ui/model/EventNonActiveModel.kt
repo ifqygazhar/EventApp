@@ -11,7 +11,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class EventActiveModel : ViewModel() {
+class EventNonActiveModel : ViewModel() {
 
     companion object {
         private const val TAG = "EventModel"
@@ -24,12 +24,12 @@ class EventActiveModel : ViewModel() {
     val isLoading: LiveData<Boolean> = _isLoading
 
     init {
-        fetchActiveEvent()
+        fetchNonActiveEvent()
     }
 
-    private fun fetchActiveEvent() {
+    private fun fetchNonActiveEvent() {
         _isLoading.value = true
-        val client = ApiConfig.getApiService().getEventActive()
+        val client = ApiConfig.getApiService().getEventNonActive()
         client.enqueue(object : Callback<EventResponse> {
             override fun onResponse(
                 call: Call<EventResponse>,
@@ -53,3 +53,4 @@ class EventActiveModel : ViewModel() {
         })
     }
 }
+
