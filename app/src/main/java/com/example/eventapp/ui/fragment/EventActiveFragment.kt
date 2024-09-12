@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.eventapp.R
 import com.example.eventapp.ui.adapter.EventAdapter
 import com.example.eventapp.ui.model.EventActiveModel
+import com.example.eventapp.util.DialogUtil.showNoInternetDialog
+import networkCheck
 
 class EventActiveFragment : Fragment(), View.OnClickListener {
 
@@ -28,29 +30,46 @@ class EventActiveFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val rvEvent = view.findViewById<RecyclerView>(R.id.rv_event)
-        val progressBar = view.findViewById<View>(R.id.includeProgressBar)
-            .findViewById<ProgressBar>(R.id.progressBar)
+        if (networkCheck(requireContext())) {
+            // Jika ada koneksi internet, lakukan fetching data
+            setupRecyclerView(view)
+            observeViewModels()
+        } else {
+            // Jika tidak ada koneksi, tampilkan AlertDialog
+            showNoInternetDialog(requireContext(), layoutInflater)
+        }
 
+    }
+
+    private fun setupRecyclerView(view: View) {
+        val rvEvent = view.findViewById<RecyclerView>(R.id.rv_event)
         // Setup vertical RecyclerView for "regular" events
         rvEvent.layoutManager = LinearLayoutManager(requireContext())
+    }
 
+    private fun observeViewModels() {
         eventActiveModel.listEvent.observe(viewLifecycleOwner, Observer { eventList ->
-
             // Pass the full event list to the main adapter
             val eventAdapter = EventAdapter(eventList)
-            rvEvent.adapter = eventAdapter
+            view?.findViewById<RecyclerView>(R.id.rv_event)?.adapter = eventAdapter
         })
 
-        eventActiveModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
-            if (isLoading) {
-                progressBar.visibility = View.VISIBLE
-                rvEvent.visibility = View.GONE
-            } else {
-                progressBar.visibility = View.GONE
-                rvEvent.visibility = View.VISIBLE
-            }
-        })
+
+    }
+
+    private fun updateLoadingState() {
+        val isLoading = eventActiveModel.isLoading.value ?: false
+        val progressBar = view?.findViewById<View>(R.id.includeProgressBar)
+            ?.findViewById<ProgressBar>(R.id.progressBar)
+        val rvEvent = view?.findViewById<RecyclerView>(R.id.rv_event)
+
+        if (isLoading) {
+            progressBar?.visibility = View.VISIBLE
+            rvEvent?.visibility = View.GONE
+        } else {
+            progressBar?.visibility = View.GONE
+            rvEvent?.visibility = View.VISIBLE
+        }
     }
 
     override fun onClick(p0: View?) {

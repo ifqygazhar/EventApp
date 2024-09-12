@@ -27,10 +27,6 @@ class EventActiveModel : ViewModel() {
         fetchActiveEvent()
     }
 
-    fun refreshActiveEvents() {
-        fetchActiveEvent()
-    }
-
     private fun fetchActiveEvent() {
         _isLoading.value = true
         val client = ApiConfig.getApiService().getEventActive()

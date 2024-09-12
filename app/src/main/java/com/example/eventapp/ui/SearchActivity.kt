@@ -15,6 +15,9 @@ import com.example.eventapp.databinding.ActivitySearchBinding
 import com.example.eventapp.ui.adapter.EventAdapter
 import com.example.eventapp.ui.model.EventSearchModel
 
+import com.example.eventapp.util.DialogUtil
+import networkCheck
+
 class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
     private val eventSearchModel: EventSearchModel by viewModels()
@@ -25,6 +28,8 @@ class SearchActivity : AppCompatActivity() {
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.includeToolbar.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24)
 
         binding.includeToolbar.toolbar.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
@@ -39,13 +44,19 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
-        // Saat user menekan enter, lakukan pencarian dan simpan state query
+        // Saat user menekan enter, lakukan pengecekan internet terlebih dahulu sebelum pencarian
         binding.tfSearch.editText?.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH || event?.keyCode == KeyEvent.KEYCODE_ENTER) {
                 val query = binding.tfSearch.editText?.text.toString()
                 if (query.isNotEmpty()) {
-                    eventSearchModel.setSearchQuery(query)
-                    eventSearchModel.fetchSearchEvent(query)
+                    // Cek koneksi internet
+                    if (networkCheck(this)) {
+                        eventSearchModel.setSearchQuery(query)
+                        eventSearchModel.fetchSearchEvent(query)
+                    } else {
+                        // Tampilkan dialog no internet
+                        DialogUtil.showNoInternetDialog(this, layoutInflater)
+                    }
                 }
                 true
             } else {
@@ -54,7 +65,14 @@ class SearchActivity : AppCompatActivity() {
         }
 
         eventSearchModel.listEvent.observe(this) { eventList ->
-            eventAdapter.setData(eventList)
+            if (eventList.isEmpty()) {
+                binding.imgEmpty.visibility = View.VISIBLE
+                binding.rvEventSearch.visibility = View.GONE
+            } else {
+                binding.imgEmpty.visibility = View.GONE
+                binding.rvEventSearch.visibility = View.VISIBLE
+                eventAdapter.setData(eventList)
+            }
         }
 
         eventSearchModel.isLoading.observe(this) {

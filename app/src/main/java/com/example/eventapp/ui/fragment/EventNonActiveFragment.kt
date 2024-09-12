@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.eventapp.R
 import com.example.eventapp.ui.adapter.EventAdapter
 import com.example.eventapp.ui.model.EventNonActiveModel
+import com.example.eventapp.util.DialogUtil.showNoInternetDialog
+import networkCheck
 
 
 class EventNonActiveFragment : Fragment(), View.OnClickListener {
@@ -29,26 +31,43 @@ class EventNonActiveFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val recyclerView = view.findViewById<RecyclerView>(R.id.rv_event_nonactive)
-        val progressBar = view.findViewById<View>(R.id.includeProgressBar)
-            .findViewById<ProgressBar>(R.id.progressBar)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-        eventNonActiveModel.listEvent.observe(viewLifecycleOwner, Observer { eventList ->
-            val adapter = EventAdapter(eventList)
-            recyclerView.adapter = adapter
-        })
-
-        eventNonActiveModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
-            if (isLoading) {
-                progressBar.visibility = View.VISIBLE
-                recyclerView.visibility = View.GONE
-            } else {
-                progressBar.visibility = View.GONE
-                recyclerView.visibility = View.VISIBLE
-            }
-        })
+        if (networkCheck(requireContext())) {
+            setupRecyclerView(view)
+            observeViewModels()
+        } else {
+            showNoInternetDialog(requireContext(), layoutInflater)
+        }
     }
+
+    private fun setupRecyclerView(view: View) {
+        val recyclerView = view.findViewById<RecyclerView>(R.id.rv_event_nonactive)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+    }
+
+    private fun observeViewModels() {
+        eventNonActiveModel.listEvent.observe(viewLifecycleOwner, Observer { eventList ->
+            val eventAdapter = EventAdapter(eventList)
+            view?.findViewById<RecyclerView>(R.id.rv_event_nonactive)?.adapter = eventAdapter
+        })
+
+        eventNonActiveModel.isLoading.observe(viewLifecycleOwner, Observer { updateLoadingState() })
+    }
+
+    private fun updateLoadingState() {
+        val isLoading = eventNonActiveModel.isLoading.value ?: false
+        val progressBar = view?.findViewById<View>(R.id.includeProgressBar)
+            ?.findViewById<ProgressBar>(R.id.progressBar)
+        val recyclerView = view?.findViewById<RecyclerView>(R.id.rv_event_nonactive)
+
+        if (isLoading) {
+            progressBar?.visibility = View.VISIBLE
+            recyclerView?.visibility = View.GONE
+        } else {
+            progressBar?.visibility = View.GONE
+            recyclerView?.visibility = View.VISIBLE
+        }
+    }
+
 
     override fun onClick(p0: View?) {
         TODO("Not yet implemented")

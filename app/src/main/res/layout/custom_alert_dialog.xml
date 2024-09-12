@@ -51,24 +51,14 @@
 
             <com.google.android.material.button.MaterialButton
                 style="@style/RoundedButton"
-                android:id="@+id/btnRefresh"
+                android:id="@+id/btnClose"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/cancel"
+                android:text="@string/close"
                 android:textColor="@color/primary"
                 android:backgroundTint="@color/white"
                 android:padding="8dp" />
 
-            <com.google.android.material.button.MaterialButton
-                style="@style/RoundedButton"
-                android:id="@+id/btnCancel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/refresh"
-                android:textColor="@color/primary"
-                android:backgroundTint="@color/green"
-                android:padding="8dp"
-                android:layout_marginStart="16dp" />
 
         </LinearLayout>
 

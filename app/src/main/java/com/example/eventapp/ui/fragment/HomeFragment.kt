@@ -5,11 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -20,6 +17,7 @@ import com.example.eventapp.ui.adapter.EventAdapter
 import com.example.eventapp.ui.adapter.EventSmallAdapter
 import com.example.eventapp.ui.model.EventActiveModel
 import com.example.eventapp.ui.model.EventNonActiveModel
+import com.example.eventapp.util.DialogUtil.showNoInternetDialog
 import networkCheck
 
 class HomeFragment : Fragment(), View.OnClickListener {
@@ -48,49 +46,8 @@ class HomeFragment : Fragment(), View.OnClickListener {
             val tvFinishEvent = view.findViewById<TextView>(R.id.tv_finish_event)
             tvUpcomingEvent.visibility = View.GONE
             tvFinishEvent.visibility = View.GONE
-            showNoInternetDialog()
+            showNoInternetDialog(requireContext(), layoutInflater)
         }
-    }
-
-    private fun refreshData() {
-        if (networkCheck(requireContext())) {
-            // Refresh data di ViewModel
-            eventActiveModel.refreshActiveEvents()
-            eventNonActiveModel.refreshNonActiveEvents()
-            setupRecyclerViews(requireView())
-            observeViewModels()
-        } else {
-            Toast.makeText(requireContext(), "Still no internet connection", Toast.LENGTH_SHORT)
-                .show()
-            showNoInternetDialog()
-        }
-    }
-
-
-    private fun showNoInternetDialog() {
-        val builder = AlertDialog.Builder(requireContext())
-        val dialogView = layoutInflater.inflate(R.layout.custom_alert_dialog, null)
-
-        builder.setView(dialogView)
-        val dialog = builder.create()
-
-        dialogView.findViewById<Button>(R.id.btnRefresh).setOnClickListener {
-            // Cek koneksi internet saat refresh ditekan
-            if (networkCheck(requireContext())) {
-                refreshData()
-                dialog.dismiss()  // Tutup dialog setelah refresh dipanggil
-            } else {
-                Toast.makeText(requireContext(), "Still no internet connection", Toast.LENGTH_SHORT)
-                    .show()
-
-            }
-        }
-
-        dialogView.findViewById<Button>(R.id.btnCancel).setOnClickListener {
-            dialog.dismiss()
-        }
-
-        dialog.show()
     }
 
 
@@ -150,11 +107,6 @@ class HomeFragment : Fragment(), View.OnClickListener {
             tvUpcomingEvent?.visibility = View.VISIBLE
             tvFinishEvent?.visibility = View.VISIBLE
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        refreshData()
     }
 
     override fun onClick(p0: View?) {
