@@ -27,6 +27,10 @@ class EventNonActiveModel : ViewModel() {
         fetchNonActiveEvent()
     }
 
+    fun refreshNonActiveEvents() {
+        fetchNonActiveEvent()
+    }
+
     private fun fetchNonActiveEvent() {
         _isLoading.value = true
         val client = ApiConfig.getApiService().getEventNonActive()
@@ -53,4 +57,3 @@ class EventNonActiveModel : ViewModel() {
         })
     }
 }
-
