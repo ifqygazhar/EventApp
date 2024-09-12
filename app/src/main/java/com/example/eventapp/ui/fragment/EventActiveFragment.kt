@@ -28,25 +28,27 @@ class EventActiveFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val recyclerView = view.findViewById<RecyclerView>(R.id.rv_event)
+        val rvEvent = view.findViewById<RecyclerView>(R.id.rv_event)
         val progressBar = view.findViewById<View>(R.id.includeProgressBar)
             .findViewById<ProgressBar>(R.id.progressBar)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
+        // Setup vertical RecyclerView for "regular" events
+        rvEvent.layoutManager = LinearLayoutManager(requireContext())
 
         eventActiveModel.listEvent.observe(viewLifecycleOwner, Observer { eventList ->
-            val adapter = EventAdapter(eventList)
-            recyclerView.adapter = adapter
+
+            // Pass the full event list to the main adapter
+            val eventAdapter = EventAdapter(eventList)
+            rvEvent.adapter = eventAdapter
         })
 
-      
         eventActiveModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
             if (isLoading) {
                 progressBar.visibility = View.VISIBLE
-                recyclerView.visibility = View.GONE
+                rvEvent.visibility = View.GONE
             } else {
                 progressBar.visibility = View.GONE
-                recyclerView.visibility = View.VISIBLE
+                rvEvent.visibility = View.VISIBLE
             }
         })
     }

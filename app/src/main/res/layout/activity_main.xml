@@ -37,6 +37,7 @@
         app:sideMargins="10dp"
         app:indicatorRadius="10dp"
         app:textSize="14sp"
+        android:contentDescription="@string/smooth_bottom_bar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/menu_nav_bottom" />
 

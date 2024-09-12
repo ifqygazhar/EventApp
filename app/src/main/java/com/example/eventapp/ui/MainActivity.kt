@@ -12,6 +12,7 @@ import com.example.eventapp.R
 import com.example.eventapp.databinding.ActivityMainBinding
 import com.example.eventapp.ui.fragment.EventActiveFragment
 import com.example.eventapp.ui.fragment.EventNonActiveFragment
+import com.example.eventapp.ui.fragment.HomeFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -26,13 +27,14 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment, EventActiveFragment())
+                .replace(R.id.main_fragment, HomeFragment())
                 .commit()
         }
         binding.bottomBar.setOnItemSelectedListener {
             val selectedFragment = when (it) {
-                0 -> EventActiveFragment()
-                1 -> EventNonActiveFragment()
+                0 -> HomeFragment()
+                1 -> EventActiveFragment()
+                2 -> EventNonActiveFragment()
                 else -> EventActiveFragment()
             }
             supportFragmentManager.beginTransaction()

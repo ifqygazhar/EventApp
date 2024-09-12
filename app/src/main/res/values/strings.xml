@@ -6,4 +6,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="menu_search">menu search</string>
     <string name="search_hint">search</string>
+    <string name="smooth_bottom_bar">smooth bottom bar</string>
+    <string name="upcoming_event">Upcoming Event</string>
+    <string name="finish_event">Finish Event</string>
+    <string name="menu_home">Home</string>
 </resources>
