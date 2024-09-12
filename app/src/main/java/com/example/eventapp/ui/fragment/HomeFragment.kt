@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -30,6 +31,9 @@ class HomeFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val tvUpcomingEvent = view.findViewById<TextView>(R.id.tv_upcoming_event)
+        val tvFinishEvent = view.findViewById<TextView>(R.id.tv_finish_event)
 
         val rvEventSoon = view.findViewById<RecyclerView>(R.id.rv_event_soon)
         val rvEvent = view.findViewById<RecyclerView>(R.id.rv_event)
@@ -69,16 +73,22 @@ class HomeFragment : Fragment(), View.OnClickListener {
             ?.findViewById<ProgressBar>(R.id.progressBar)
         val rvEvent = view?.findViewById<RecyclerView>(R.id.rv_event)
         val rvEventSoon = view?.findViewById<RecyclerView>(R.id.rv_event_soon)
+        val tvUpcomingEvent = view?.findViewById<TextView>(R.id.tv_upcoming_event)
+        val tvFinishEvent = view?.findViewById<TextView>(R.id.tv_finish_event)
 
         // Show loading if either of the ViewModel is loading
         if (isLoadingActive || isLoadingNonActive) {
             progressBar?.visibility = View.VISIBLE
             rvEvent?.visibility = View.GONE
             rvEventSoon?.visibility = View.GONE
+            tvUpcomingEvent?.visibility = View.GONE
+            tvFinishEvent?.visibility = View.GONE
         } else {
             progressBar?.visibility = View.GONE
             rvEvent?.visibility = View.VISIBLE
             rvEventSoon?.visibility = View.VISIBLE
+            tvUpcomingEvent?.visibility = View.VISIBLE
+            tvFinishEvent?.visibility = View.VISIBLE
         }
     }
 
