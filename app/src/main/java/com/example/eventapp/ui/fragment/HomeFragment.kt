@@ -69,7 +69,12 @@ class HomeFragment : Fragment(), View.OnClickListener {
         // Observe active events (upcoming)
         eventActiveModel.listEvent.observe(viewLifecycleOwner, Observer { eventList ->
             val eventSoonList = eventList.take(5)
-            val eventSoonAdapter = EventSmallAdapter(eventSoonList)
+            val eventSoonAdapter = EventSmallAdapter(eventSoonList) { eventId ->
+                // Intent untuk pindah ke DetailActivity sambil membawa eventId
+                val intent = Intent(requireContext(), DetailActivity::class.java)
+                intent.putExtra("EVENT_ID", eventId)
+                startActivity(intent)
+            }
             view?.findViewById<RecyclerView>(R.id.rv_event_soon)?.adapter = eventSoonAdapter
         })
 

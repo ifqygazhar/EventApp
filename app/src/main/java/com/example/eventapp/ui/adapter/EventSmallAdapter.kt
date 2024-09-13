@@ -10,13 +10,16 @@ import com.example.eventapp.R
 import com.example.eventapp.data.response.ListEventsItem
 import com.example.eventapp.util.LoadImage
 
-class EventSmallAdapter(private var eventList: List<ListEventsItem>) :
+class EventSmallAdapter(
+    private var eventList: List<ListEventsItem>,
+    private val onItemClick: (Int) -> Unit
+) :
     RecyclerView.Adapter<EventSmallAdapter.EventSmallViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventSmallViewHolder {
         val view =
             LayoutInflater.from(parent.context).inflate(R.layout.item_event_small, parent, false)
-        return EventSmallViewHolder(view)
+        return EventSmallViewHolder(view, onItemClick)
     }
 
     override fun onBindViewHolder(holder: EventSmallViewHolder, position: Int) {
@@ -26,7 +29,8 @@ class EventSmallAdapter(private var eventList: List<ListEventsItem>) :
 
     override fun getItemCount(): Int = eventList.size
 
-    class EventSmallViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class EventSmallViewHolder(itemView: View, private val onItemClick: (Int) -> Unit) :
+        RecyclerView.ViewHolder(itemView) {
         private val tvName = itemView.findViewById<TextView>(R.id.tvName)
         private val tvOwner = itemView.findViewById<TextView>(R.id.tvOwner)
         private val tvCity = itemView.findViewById<TextView>(R.id.tvCity)
@@ -38,6 +42,11 @@ class EventSmallAdapter(private var eventList: List<ListEventsItem>) :
             tvCity.text = event.cityName
 
             LoadImage.load(itemView.context, ivEventCover, event.mediaCover, R.color.placeholder)
+
+            // Set click listener on itemView and pass the event id
+            itemView.setOnClickListener {
+                onItemClick(event.id)
+            }
         }
     }
 }
