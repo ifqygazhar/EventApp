@@ -1,3 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/navigation" />
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/eventActiveFragment2">
+    <fragment
+        android:id="@+id/eventActiveFragment2"
+        android:name="com.example.eventapp.ui.fragment.EventActiveFragment"
+        android:label="fragment_event_active"
+        tools:layout="@layout/fragment_event_active">
+        <action
+            android:id="@+id/action_eventActiveFragment2_to_detailActivity2"
+            app:destination="@id/detailActivity2" />
+    </fragment>
+    <fragment
+        android:id="@+id/homeFragment2"
+        android:name="com.example.eventapp.ui.fragment.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment2_to_detailActivity2"
+            app:destination="@id/detailActivity2" />
+    </fragment>
+    <fragment
+        android:id="@+id/eventNonActiveFragment2"
+        android:name="com.example.eventapp.ui.fragment.EventNonActiveFragment"
+        android:label="fragment_event_non_active"
+        tools:layout="@layout/fragment_event_non_active">
+        <action
+            android:id="@+id/action_eventNonActiveFragment2_to_detailActivity2"
+            app:destination="@id/detailActivity2" />
+    </fragment>
+    <activity
+        android:id="@+id/detailActivity2"
+        android:name="com.example.eventapp.ui.DetailActivity"
+        android:label="activity_detail"
+        tools:layout="@layout/activity_detail" />
+</navigation>

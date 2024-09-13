@@ -17,6 +17,12 @@ import com.example.eventapp.ui.fragment.HomeFragment
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
+    // Key untuk menyimpan fragment yang dipilih
+    private val SELECTED_FRAGMENT_KEY = "selected_fragment"
+
+    // Variabel untuk menyimpan posisi fragment yang terakhir dipilih
+    private var selectedFragmentIndex = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -24,26 +30,23 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.includeToolbar.toolbar)
 
-
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment, HomeFragment())
-                .commit()
+        // Jika ada savedInstanceState, ambil fragment yang dipilih sebelumnya
+        if (savedInstanceState != null) {
+            selectedFragmentIndex = savedInstanceState.getInt(SELECTED_FRAGMENT_KEY, 0)
+            // Set fragment yang sudah dipilih sebelumnya
+            loadFragment(selectedFragmentIndex)
+        } else {
+            // Jika tidak ada state yang tersimpan, tampilkan HomeFragment sebagai default
+            loadFragment(0)
         }
-        binding.bottomBar.setOnItemSelectedListener {
-            val selectedFragment = when (it) {
-                0 -> HomeFragment()
-                1 -> EventActiveFragment()
-                2 -> EventNonActiveFragment()
-                else -> EventActiveFragment()
+
+        // Set up bottom bar listener, namun hanya update jika selection berubah
+        binding.bottomBar.setOnItemSelectedListener { position ->
+            if (position != selectedFragmentIndex) {
+                selectedFragmentIndex = position
+                loadFragment(selectedFragmentIndex)
             }
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment, selectedFragment)
-                .commit()
         }
-
-
-
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.frame_container)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -55,6 +58,26 @@ class MainActivity : AppCompatActivity() {
             )
             insets
         }
+    }
+
+    // Simpan fragment yang dipilih saat orientasi berubah
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(SELECTED_FRAGMENT_KEY, selectedFragmentIndex)
+    }
+
+    // Fungsi untuk mengganti fragment
+    private fun loadFragment(index: Int) {
+        val selectedFragment = when (index) {
+            0 -> HomeFragment()
+            1 -> EventActiveFragment()
+            2 -> EventNonActiveFragment()
+            else -> HomeFragment()
+        }
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.main_fragment, selectedFragment)
+            .commit()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -74,3 +97,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+

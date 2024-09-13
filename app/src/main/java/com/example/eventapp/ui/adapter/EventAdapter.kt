@@ -10,10 +10,12 @@ import com.example.eventapp.R
 import com.example.eventapp.data.response.ListEventsItem
 import com.example.eventapp.util.LoadImage
 
-class EventAdapter(private var eventList: List<ListEventsItem>) :
+class EventAdapter(
+    private var eventList: List<ListEventsItem>,
+    private val onItemClick: (Int) -> Unit
+) :
     RecyclerView.Adapter<EventAdapter.EventViewHolder>() {
 
-    // Method to update data in the adapter
     fun setData(newEventList: List<ListEventsItem>) {
         eventList = newEventList
         notifyDataSetChanged()  // Notify RecyclerView that data has changed
@@ -21,7 +23,7 @@ class EventAdapter(private var eventList: List<ListEventsItem>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_event, parent, false)
-        return EventViewHolder(view)
+        return EventViewHolder(view, onItemClick)
     }
 
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
@@ -31,7 +33,8 @@ class EventAdapter(private var eventList: List<ListEventsItem>) :
 
     override fun getItemCount(): Int = eventList.size
 
-    class EventViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class EventViewHolder(itemView: View, private val onItemClick: (Int) -> Unit) :
+        RecyclerView.ViewHolder(itemView) {
         private val tvName = itemView.findViewById<TextView>(R.id.tvName)
         private val tvOwner = itemView.findViewById<TextView>(R.id.tvOwner)
         private val tvCity = itemView.findViewById<TextView>(R.id.tvCity)
@@ -49,6 +52,12 @@ class EventAdapter(private var eventList: List<ListEventsItem>) :
             tvRegister.text = event.registrants.toString()
 
             LoadImage.load(itemView.context, ivEventCover, event.mediaCover, R.color.placeholder)
+
+            // Set click listener on itemView and pass the event id
+            itemView.setOnClickListener {
+                onItemClick(event.id)
+            }
         }
     }
 }
+

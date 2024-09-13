@@ -1,6 +1,7 @@
 package com.example.eventapp.ui.fragment
 
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eventapp.R
+import com.example.eventapp.ui.DetailActivity
 import com.example.eventapp.ui.adapter.EventAdapter
 import com.example.eventapp.ui.adapter.EventSmallAdapter
 import com.example.eventapp.ui.model.EventActiveModel
@@ -73,7 +75,12 @@ class HomeFragment : Fragment(), View.OnClickListener {
 
         // Observe non-active events (finished)
         eventNonActiveModel.listEvent.observe(viewLifecycleOwner, Observer { eventList ->
-            val eventAdapter = EventAdapter(eventList)
+            val eventAdapter = EventAdapter(eventList) { eventId ->
+                // Intent untuk pindah ke DetailActivity sambil membawa eventId
+                val intent = Intent(requireContext(), DetailActivity::class.java)
+                intent.putExtra("EVENT_ID", eventId)
+                startActivity(intent)
+            }
             view?.findViewById<RecyclerView>(R.id.rv_event)?.adapter = eventAdapter
         })
 

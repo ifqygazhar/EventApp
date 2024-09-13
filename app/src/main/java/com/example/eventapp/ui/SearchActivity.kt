@@ -1,5 +1,6 @@
 package com.example.eventapp.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
@@ -14,7 +15,6 @@ import com.example.eventapp.R
 import com.example.eventapp.databinding.ActivitySearchBinding
 import com.example.eventapp.ui.adapter.EventAdapter
 import com.example.eventapp.ui.model.EventSearchModel
-
 import com.example.eventapp.util.DialogUtil
 import networkCheck
 
@@ -28,6 +28,7 @@ class SearchActivity : AppCompatActivity() {
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.includeToolbar.toolbar)
+        supportActionBar?.title = getString(R.string.search)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24)
 
@@ -89,7 +90,13 @@ class SearchActivity : AppCompatActivity() {
 
     // Set up RecyclerView with adapter and layout manager
     private fun setupRecyclerView() {
-        eventAdapter = EventAdapter(emptyList())
+        eventAdapter = EventAdapter(emptyList()) { eventId ->
+            // Intent untuk pindah ke DetailActivity sambil membawa eventId
+            val intent = Intent(this, DetailActivity::class.java)
+            intent.putExtra("EVENT_ID", eventId)
+            startActivity(intent)
+        }
+
         val layoutManager = LinearLayoutManager(this)
         binding.rvEventSearch.layoutManager = layoutManager
         val itemDecoration = DividerItemDecoration(this, layoutManager.orientation)

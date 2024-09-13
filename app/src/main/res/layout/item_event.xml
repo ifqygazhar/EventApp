@@ -21,8 +21,8 @@
             android:layout_width="0dp"
             android:layout_height="200dp"
             android:contentDescription="title"
-            android:visibility="visible"
             android:scaleType="centerCrop"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -62,101 +62,13 @@
             app:layout_constraintTop_toBottomOf="@id/tvName"
             tools:text="city" />
 
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardCategory"
+        <include
+            android:id="@+id/include_card"
+            layout="@layout/card_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            app:cardBackgroundColor="@color/primary"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvOwner"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="0dp">
-
-            <TextView
-                android:id="@+id/tvCategory"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:textSize="14sp"
-                android:gravity="center_vertical"
-                android:drawableStart="@drawable/ic_baseline_category_24"
-                android:drawablePadding="8dp"
-                android:textColor="@color/white"
-                android:textStyle="normal"
-                tools:text="category" />
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardQouta"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="10dp"
-            android:elevation="0dp"
-            app:cardBackgroundColor="@color/orange"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/cardCategory"
-            app:layout_constraintTop_toBottomOf="@id/tvOwner">
-
-            <TextView
-                android:id="@+id/tvQouta"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/orange"
-                android:drawableStart="@drawable/ic_baseline_co_present_24"
-                android:drawablePadding="8dp"
-                android:gravity="center_vertical"
-                android:padding="8dp"
-                android:textColor="@color/black"
-                android:textSize="14sp"
-                android:textStyle="normal"
-                app:layout_constraintStart_toEndOf="@id/tvCategory"
-                app:layout_constraintTop_toBottomOf="@id/tvOwner"
-                tools:text="qouta" />
-
-        </com.google.android.material.card.MaterialCardView>
-
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardRegister"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="10dp"
-            android:elevation="0dp"
-            app:cardBackgroundColor="@color/green"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/cardQouta"
-            app:layout_constraintTop_toBottomOf="@id/tvOwner">
-
-            <TextView
-                android:id="@+id/tvRegister"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/green"
-                android:drawableStart="@drawable/ic_baseline_app_registration_24"
-                android:drawablePadding="8dp"
-                android:gravity="center_vertical"
-                android:padding="8dp"
-                android:textColor="@color/black"
-                android:textSize="14sp"
-                android:textStyle="normal"
-                app:layout_constraintStart_toEndOf="@id/tvQouta"
-                app:layout_constraintTop_toBottomOf="@id/tvOwner"
-                tools:text="register" />
-
-
-        </com.google.android.material.card.MaterialCardView>
+            app:layout_constraintTop_toBottomOf="@id/tvOwner" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

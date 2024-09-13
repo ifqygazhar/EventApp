@@ -1,5 +1,6 @@
 package com.example.eventapp.ui.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eventapp.R
+import com.example.eventapp.ui.DetailActivity
 import com.example.eventapp.ui.adapter.EventAdapter
 import com.example.eventapp.ui.model.EventActiveModel
 import com.example.eventapp.util.DialogUtil.showNoInternetDialog
@@ -49,12 +51,17 @@ class EventActiveFragment : Fragment(), View.OnClickListener {
 
     private fun observeViewModels() {
         eventActiveModel.listEvent.observe(viewLifecycleOwner, Observer { eventList ->
-            // Pass the full event list to the main adapter
-            val eventAdapter = EventAdapter(eventList)
+            val eventAdapter = EventAdapter(eventList) { eventId ->
+                // Intent untuk pindah ke DetailActivity sambil membawa eventId
+                val intent = Intent(requireContext(), DetailActivity::class.java)
+                intent.putExtra("EVENT_ID", eventId)
+                startActivity(intent)
+            }
             view?.findViewById<RecyclerView>(R.id.rv_event)?.adapter = eventAdapter
         })
-
-
+        eventActiveModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
+            updateLoadingState()
+        })
     }
 
     private fun updateLoadingState() {
