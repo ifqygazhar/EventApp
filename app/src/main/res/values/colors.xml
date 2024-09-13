@@ -6,4 +6,6 @@
     <color name="orange">#FF885B</color>
     <color name="green">#A1D6B2</color>
     <color name="placeholder">#E0E0E0</color>
+    <color name="blue">#125DE2</color>
+    <color name="red">#DB124F</color>
 </resources>

@@ -70,6 +70,9 @@ class DetailActivity : AppCompatActivity() {
             binding.tvOwner.text = event.ownerName
             binding.tvCity.text = event.cityName
             binding.tvSummary.text = event.summary
+            binding.tvStart.text = event.beginTime
+            binding.tvEnd.text = event.endTime
+            
             tvCategory.text = event.category
             tvQouta.text = event.quota.toString()
             tvRegister.text = event.registrants.toString()
