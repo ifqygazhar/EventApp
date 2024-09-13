@@ -33,12 +33,16 @@ class MainActivity : AppCompatActivity() {
         // Jika ada savedInstanceState, ambil fragment yang dipilih sebelumnya
         if (savedInstanceState != null) {
             selectedFragmentIndex = savedInstanceState.getInt(SELECTED_FRAGMENT_KEY, 0)
-            // Set fragment yang sudah dipilih sebelumnya
-            loadFragment(selectedFragmentIndex)
         } else {
             // Jika tidak ada state yang tersimpan, tampilkan HomeFragment sebagai default
-            loadFragment(0)
+            selectedFragmentIndex = 0
         }
+
+        // Set fragment yang sudah dipilih sebelumnya
+        loadFragment(selectedFragmentIndex)
+
+        // Set item active di bottom bar sesuai fragment yang dipilih
+        binding.bottomBar.itemActiveIndex = selectedFragmentIndex
 
         // Set up bottom bar listener, namun hanya update jika selection berubah
         binding.bottomBar.setOnItemSelectedListener { position ->
@@ -97,4 +101,5 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+
 
