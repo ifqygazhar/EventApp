@@ -19,7 +19,7 @@ import androidx.lifecycle.Observer
 import com.example.eventapp.R
 import com.example.eventapp.databinding.ActivityDetailBinding
 import com.example.eventapp.ui.model.EventDetailModel
-import com.example.eventapp.util.LoadImage
+import com.example.eventapp.utils.LoadImage
 
 
 class DetailActivity : AppCompatActivity() {
@@ -75,8 +75,8 @@ class DetailActivity : AppCompatActivity() {
             binding.tvSisa.text = "Sisa Qouta Registrasi : ${(event.quota - event.registrants)}"
 
             tvCategory.text = event.category
-            tvQouta.text = event.quota.toString()
-            tvRegister.text = event.registrants.toString()
+            tvQouta.text = "Qouta : ${event.quota}"
+            tvRegister.text = "Register : ${event.registrants}"
 
             LoadImage.load(this, binding.imgLogo, event.mediaCover, R.color.placeholder)
 

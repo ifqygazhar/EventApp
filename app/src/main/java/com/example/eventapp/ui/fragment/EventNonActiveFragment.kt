@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,12 +14,13 @@ import com.example.eventapp.R
 import com.example.eventapp.ui.DetailActivity
 import com.example.eventapp.ui.adapter.EventAdapter
 import com.example.eventapp.ui.model.EventNonActiveModel
-import com.example.eventapp.util.DialogUtil.showNoInternetDialog
+import com.example.eventapp.ui.model.factory.EventNonActiveModelFactory
+import com.example.eventapp.utils.DialogUtil.showNoInternetDialog
 import networkCheck
 
 
 class EventNonActiveFragment : Fragment(), View.OnClickListener {
-    private val eventNonActiveModel: EventNonActiveModel by viewModels()
+    private lateinit var eventNonActiveModel: EventNonActiveModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,6 +32,9 @@ class EventNonActiveFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        eventNonActiveModel = EventNonActiveModelFactory.getInstance(requireContext())
+            .create(EventNonActiveModel::class.java)
 
         if (networkCheck(requireContext())) {
             setupRecyclerView(view)

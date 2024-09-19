@@ -1,4 +1,4 @@
-package com.example.eventapp.util
+package com.example.eventapp.utils
 
 open class EventHandler<out T>(private val content: T) {
 

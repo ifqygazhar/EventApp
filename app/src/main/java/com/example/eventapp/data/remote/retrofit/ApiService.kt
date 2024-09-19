@@ -1,7 +1,7 @@
-package com.example.eventapp.data.retrofit
+package com.example.eventapp.data.remote.retrofit
 
-import com.example.eventapp.data.response.EventDetailResponse
-import com.example.eventapp.data.response.EventResponse
+import com.example.eventapp.data.remote.response.EventDetailResponse
+import com.example.eventapp.data.remote.response.EventResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path

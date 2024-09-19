@@ -5,22 +5,23 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.eventapp.R
 import com.example.eventapp.databinding.ActivitySearchBinding
 import com.example.eventapp.ui.adapter.EventAdapter
 import com.example.eventapp.ui.model.EventSearchModel
-import com.example.eventapp.util.DialogUtil
+import com.example.eventapp.ui.model.factory.EventSearchModelFactory
+import com.example.eventapp.utils.DialogUtil
 import networkCheck
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
-    private val eventSearchModel: EventSearchModel by viewModels()
+    private lateinit var eventSearchModel: EventSearchModel
     private lateinit var eventAdapter: EventAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +36,10 @@ class SearchActivity : AppCompatActivity() {
         binding.includeToolbar.toolbar.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
+
+
+        val factory = EventSearchModelFactory.getInstance(this)
+        eventSearchModel = ViewModelProvider(this, factory)[EventSearchModel::class.java]
 
         setupRecyclerView()
 

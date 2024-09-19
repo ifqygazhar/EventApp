@@ -1,4 +1,4 @@
-package com.example.eventapp.util
+package com.example.eventapp.utils
 
 import android.content.Context
 import android.graphics.drawable.ColorDrawable

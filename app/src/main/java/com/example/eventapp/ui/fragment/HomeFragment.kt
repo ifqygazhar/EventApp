@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,13 +18,15 @@ import com.example.eventapp.ui.adapter.EventAdapter
 import com.example.eventapp.ui.adapter.EventSmallAdapter
 import com.example.eventapp.ui.model.EventActiveModel
 import com.example.eventapp.ui.model.EventNonActiveModel
-import com.example.eventapp.util.DialogUtil.showNoInternetDialog
+import com.example.eventapp.ui.model.factory.EventActiveModelFactory
+import com.example.eventapp.ui.model.factory.EventNonActiveModelFactory
+import com.example.eventapp.utils.DialogUtil.showNoInternetDialog
 import networkCheck
 
 class HomeFragment : Fragment(), View.OnClickListener {
 
-    private val eventActiveModel: EventActiveModel by viewModels()
-    private val eventNonActiveModel: EventNonActiveModel by viewModels()
+    private lateinit var eventActiveModel: EventActiveModel
+    private lateinit var eventNonActiveModel: EventNonActiveModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,6 +37,13 @@ class HomeFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Inisialisasi ViewModel menggunakan factory
+        eventActiveModel = EventActiveModelFactory.getInstance(requireContext())
+            .create(EventActiveModel::class.java)
+
+        eventNonActiveModel = EventNonActiveModelFactory.getInstance(requireContext())
+            .create(EventNonActiveModel::class.java)
 
         // Cek apakah ada koneksi internet
         if (networkCheck(requireContext())) {

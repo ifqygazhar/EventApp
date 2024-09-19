@@ -4,14 +4,11 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.eventapp.data.response.EventResponse
-import com.example.eventapp.data.response.ListEventsItem
-import com.example.eventapp.data.retrofit.ApiConfig
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.eventapp.data.EventRepository
+import com.example.eventapp.data.Result
+import com.example.eventapp.data.remote.response.ListEventsItem
 
-class EventSearchModel : ViewModel() {
+class EventSearchModel(private val eventRepository: EventRepository) : ViewModel() {
     companion object {
         private const val TAG = "EventSearchModel"
     }
@@ -32,25 +29,20 @@ class EventSearchModel : ViewModel() {
 
     fun fetchSearchEvent(query: String) {
         _isLoading.value = true
-        val client = ApiConfig.getApiService().getEventSearch(-1, query)
-        client.enqueue(object : Callback<EventResponse> {
-            override fun onResponse(
-                call: Call<EventResponse>,
-                response: Response<EventResponse>
-            ) {
-                val responseBody = response.body()
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    _listEvent.value = responseBody?.listEvents
-                } else {
-                    Log.e(TAG, "onFailure: ${response.message()}")
+
+        eventRepository.fetchSearchEvent(query).observeForever { result ->
+            when (result) {
+                is Result.Loading -> _isLoading.value = true
+                is Result.Success -> {
+                    _isLoading.value = false
+                    _listEvent.value = result.data
+                }
+
+                is Result.Error -> {
+                    _isLoading.value = false
+                    Log.e(TAG, "Error: ${result.error}")
                 }
             }
-
-            override fun onFailure(call: Call<EventResponse>, t: Throwable) {
-                _isLoading.value = false
-                Log.e(TAG, "onFailure: ${t.message.toString()}")
-            }
-        })
+        }
     }
 }

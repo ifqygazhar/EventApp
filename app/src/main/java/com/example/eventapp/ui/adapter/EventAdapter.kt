@@ -7,8 +7,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eventapp.R
-import com.example.eventapp.data.response.ListEventsItem
-import com.example.eventapp.util.LoadImage
+import com.example.eventapp.data.remote.response.ListEventsItem
+import com.example.eventapp.utils.LoadImage
 
 class EventAdapter(
     private var eventList: List<ListEventsItem>,

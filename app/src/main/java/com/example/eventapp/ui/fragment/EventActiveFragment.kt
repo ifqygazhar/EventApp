@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,12 +14,13 @@ import com.example.eventapp.R
 import com.example.eventapp.ui.DetailActivity
 import com.example.eventapp.ui.adapter.EventAdapter
 import com.example.eventapp.ui.model.EventActiveModel
-import com.example.eventapp.util.DialogUtil.showNoInternetDialog
+import com.example.eventapp.ui.model.factory.EventActiveModelFactory
+import com.example.eventapp.utils.DialogUtil.showNoInternetDialog
 import networkCheck
 
 class EventActiveFragment : Fragment(), View.OnClickListener {
 
-    private val eventActiveModel: EventActiveModel by viewModels()
+    private lateinit var eventActiveModel: EventActiveModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,6 +32,10 @@ class EventActiveFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Inisialisasi ViewModel menggunakan factory
+        eventActiveModel = EventActiveModelFactory.getInstance(requireContext())
+            .create(EventActiveModel::class.java)
+
         if (networkCheck(requireContext())) {
             // Jika ada koneksi internet, lakukan fetching data
             setupRecyclerView(view)
@@ -40,7 +44,6 @@ class EventActiveFragment : Fragment(), View.OnClickListener {
             // Jika tidak ada koneksi, tampilkan AlertDialog
             showNoInternetDialog(requireContext(), layoutInflater)
         }
-
     }
 
     private fun setupRecyclerView(view: View) {
