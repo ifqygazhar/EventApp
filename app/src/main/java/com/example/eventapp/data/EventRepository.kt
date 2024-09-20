@@ -50,7 +50,7 @@ class EventRepository private constructor(
                                 )
                                 eventList.add(event)
                             }
-                            eventDao.deleteAll()
+                            eventDao.deleteUpcomingAll()
                             eventDao.insertEvent(eventList)
                         }
 
@@ -101,7 +101,7 @@ class EventRepository private constructor(
                                 )
                                 eventList.add(event)
                             }
-                            eventDao.deleteAll()
+                            eventDao.deleteFinishedAll()
                             eventDao.insertEvent(eventList)
                         }
 
