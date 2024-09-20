@@ -7,10 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eventapp.R
+import com.example.eventapp.data.local.entity.EventEntity
 import com.example.eventapp.ui.DetailActivity
 import com.example.eventapp.ui.adapter.EventAdapter
 import com.example.eventapp.ui.model.EventNonActiveModel
@@ -19,8 +21,15 @@ import com.example.eventapp.utils.DialogUtil.showNoInternetDialog
 import networkCheck
 
 
-class EventNonActiveFragment : Fragment(), View.OnClickListener {
-    private lateinit var eventNonActiveModel: EventNonActiveModel
+class EventNonActiveFragment : Fragment() {
+    private val eventNonActiveModel: EventNonActiveModel by viewModels {
+        EventNonActiveModelFactory.getInstance(
+            requireActivity()
+        )
+    }
+
+    private lateinit var eventAdapter: EventAdapter
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,8 +42,6 @@ class EventNonActiveFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        eventNonActiveModel = EventNonActiveModelFactory.getInstance(requireContext())
-            .create(EventNonActiveModel::class.java)
 
         if (networkCheck(requireContext())) {
             setupRecyclerView(view)
@@ -45,26 +52,26 @@ class EventNonActiveFragment : Fragment(), View.OnClickListener {
     }
 
     private fun setupRecyclerView(view: View) {
-        val recyclerView = view.findViewById<RecyclerView>(R.id.rv_event_nonactive)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        val rvEvent = view.findViewById<RecyclerView>(R.id.rv_event_nonactive)
+        rvEvent.layoutManager = LinearLayoutManager(requireContext())
+        eventAdapter = EventAdapter(
+            onFavoriteClick = { event -> toggleFavorite(event) },
+            onItemClick = { eventId -> navigateToDetail(eventId) }
+        )
+        rvEvent.adapter = eventAdapter
     }
 
     private fun observeViewModels() {
         eventNonActiveModel.listEvent.observe(viewLifecycleOwner, Observer { eventList ->
-            val eventAdapter = EventAdapter(eventList) { eventId ->
-                // Intent untuk pindah ke DetailActivity sambil membawa eventId
-                val intent = Intent(requireContext(), DetailActivity::class.java)
-                intent.putExtra("EVENT_ID", eventId)
-                startActivity(intent)
-            }
-            view?.findViewById<RecyclerView>(R.id.rv_event_nonactive)?.adapter = eventAdapter
+            eventAdapter.submitList(eventList)
         })
-
-        eventNonActiveModel.isLoading.observe(viewLifecycleOwner, Observer { updateLoadingState() })
+        eventNonActiveModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
+            updateLoadingState(isLoading)
+        })
     }
 
-    private fun updateLoadingState() {
-        val isLoading = eventNonActiveModel.isLoading.value ?: false
+    private fun updateLoadingState(isLoading: Boolean) {
+
         val progressBar = view?.findViewById<View>(R.id.includeProgressBar)
             ?.findViewById<ProgressBar>(R.id.progressBar)
         val recyclerView = view?.findViewById<RecyclerView>(R.id.rv_event_nonactive)
@@ -79,7 +86,18 @@ class EventNonActiveFragment : Fragment(), View.OnClickListener {
     }
 
 
-    override fun onClick(p0: View?) {
-        TODO("Not yet implemented")
+    private fun toggleFavorite(event: EventEntity) {
+        if (event.isFavorite) {
+            eventNonActiveModel.deleteEvent(event)
+        } else {
+            eventNonActiveModel.saveEvent(event)
+        }
+    }
+
+    private fun navigateToDetail(eventId: Int) {
+        val intent = Intent(requireContext(), DetailActivity::class.java).apply {
+            putExtra("EVENT_ID", eventId)
+        }
+        startActivity(intent)
     }
 }

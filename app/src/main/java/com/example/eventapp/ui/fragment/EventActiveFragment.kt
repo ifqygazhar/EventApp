@@ -7,10 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eventapp.R
+import com.example.eventapp.data.local.entity.EventEntity
 import com.example.eventapp.ui.DetailActivity
 import com.example.eventapp.ui.adapter.EventAdapter
 import com.example.eventapp.ui.model.EventActiveModel
@@ -18,12 +20,18 @@ import com.example.eventapp.ui.model.factory.EventActiveModelFactory
 import com.example.eventapp.utils.DialogUtil.showNoInternetDialog
 import networkCheck
 
-class EventActiveFragment : Fragment(), View.OnClickListener {
+class EventActiveFragment : Fragment() {
 
-    private lateinit var eventActiveModel: EventActiveModel
+    private val eventActiveModel: EventActiveModel by viewModels {
+        EventActiveModelFactory.getInstance(
+            requireActivity()
+        )
+    }
+    private lateinit var eventAdapter: EventAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_event_active, container, false)
@@ -32,45 +40,36 @@ class EventActiveFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Inisialisasi ViewModel menggunakan factory
-        eventActiveModel = EventActiveModelFactory.getInstance(requireContext())
-            .create(EventActiveModel::class.java)
-
         if (networkCheck(requireContext())) {
-            // Jika ada koneksi internet, lakukan fetching data
             setupRecyclerView(view)
             observeViewModels()
         } else {
-            // Jika tidak ada koneksi, tampilkan AlertDialog
             showNoInternetDialog(requireContext(), layoutInflater)
         }
     }
 
     private fun setupRecyclerView(view: View) {
         val rvEvent = view.findViewById<RecyclerView>(R.id.rv_event)
-        // Setup vertical RecyclerView for "regular" events
         rvEvent.layoutManager = LinearLayoutManager(requireContext())
+        eventAdapter = EventAdapter(
+            onFavoriteClick = { event -> toggleFavorite(event) },
+            onItemClick = { eventId -> navigateToDetail(eventId) }
+        )
+        rvEvent.adapter = eventAdapter
     }
 
     private fun observeViewModels() {
         eventActiveModel.listEvent.observe(viewLifecycleOwner, Observer { eventList ->
-            val eventAdapter = EventAdapter(eventList) { eventId ->
-                // Intent untuk pindah ke DetailActivity sambil membawa eventId
-                val intent = Intent(requireContext(), DetailActivity::class.java)
-                intent.putExtra("EVENT_ID", eventId)
-                startActivity(intent)
-            }
-            view?.findViewById<RecyclerView>(R.id.rv_event)?.adapter = eventAdapter
+            eventAdapter.submitList(eventList)
         })
         eventActiveModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
-            updateLoadingState()
+            updateLoadingState(isLoading)
         })
     }
 
-    private fun updateLoadingState() {
-        val isLoading = eventActiveModel.isLoading.value ?: false
-        val progressBar = view?.findViewById<View>(R.id.includeProgressBar)
-            ?.findViewById<ProgressBar>(R.id.progressBar)
+    private fun updateLoadingState(isLoading: Boolean) {
+        val progressBarLayout = view?.findViewById<View>(R.id.includeProgressBar)
+        val progressBar = progressBarLayout?.findViewById<ProgressBar>(R.id.progressBar)
         val rvEvent = view?.findViewById<RecyclerView>(R.id.rv_event)
 
         if (isLoading) {
@@ -82,7 +81,19 @@ class EventActiveFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    override fun onClick(p0: View?) {
-        // Handle click events here
+
+    private fun toggleFavorite(event: EventEntity) {
+        if (event.isFavorite) {
+            eventActiveModel.deleteEvent(event)
+        } else {
+            eventActiveModel.saveEvent(event)
+        }
+    }
+
+    private fun navigateToDetail(eventId: Int) {
+        val intent = Intent(requireContext(), DetailActivity::class.java).apply {
+            putExtra("EVENT_ID", eventId)
+        }
+        startActivity(intent)
     }
 }

@@ -1,25 +1,25 @@
 package com.example.eventapp.ui.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eventapp.R
-import com.example.eventapp.data.remote.response.ListEventsItem
+import com.example.eventapp.data.local.entity.EventEntity
 import com.example.eventapp.utils.LoadImage
+import com.google.android.material.button.MaterialButton
 
 class EventAdapter(
-    private var eventList: List<ListEventsItem>,
-    private val onItemClick: (Int) -> Unit
+    private val onFavoriteClick: (EventEntity) -> Unit,
+    private val onItemClick: (Int) -> Unit,
 ) :
-    RecyclerView.Adapter<EventAdapter.EventViewHolder>() {
+    ListAdapter<EventEntity, EventAdapter.EventViewHolder>(DIFF_CALLBACK) {
 
-    fun setData(newEventList: List<ListEventsItem>) {
-        eventList = newEventList
-        notifyDataSetChanged()  // Notify RecyclerView that data has changed
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_event, parent, false)
@@ -27,13 +27,24 @@ class EventAdapter(
     }
 
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
-        val event = eventList[position]
+        val event = getItem(position)
         holder.bind(event)
+        val btnFavorite = holder.itemView.findViewById<MaterialButton>(R.id.btnFavorite)
+
+        if (event.isFavorite) {
+            btnFavorite.setIconResource(R.drawable.ic_favorite)
+        } else {
+            btnFavorite.setIconResource(R.drawable.ic_no_favorite)
+        }
+        btnFavorite.setOnClickListener {
+            onFavoriteClick(event)
+        }
     }
 
-    override fun getItemCount(): Int = eventList.size
-
-    class EventViewHolder(itemView: View, private val onItemClick: (Int) -> Unit) :
+    class EventViewHolder(
+        itemView: View,
+        private val onItemClick: (Int) -> Unit,
+    ) :
         RecyclerView.ViewHolder(itemView) {
         private val tvName = itemView.findViewById<TextView>(R.id.tvName)
         private val tvOwner = itemView.findViewById<TextView>(R.id.tvOwner)
@@ -43,13 +54,13 @@ class EventAdapter(
         private val tvRegister = itemView.findViewById<TextView>(R.id.tvRegister)
         private val ivEventCover = itemView.findViewById<ImageView>(R.id.ivPicture)
 
-        fun bind(event: ListEventsItem) {
-            tvName.text = event.name
-            tvOwner.text = event.ownerName
-            tvCity.text = event.cityName
+        fun bind(event: EventEntity) {
+            tvName.text = event.title
+            tvOwner.text = event.owner
+            tvCity.text = event.city
             tvCategory.text = event.category
             tvQouta.text = event.quota.toString()
-            tvRegister.text = event.registrants.toString()
+            tvRegister.text = event.register.toString()
 
             LoadImage.load(itemView.context, ivEventCover, event.mediaCover, R.color.placeholder)
 
@@ -58,6 +69,23 @@ class EventAdapter(
                 onItemClick(event.id)
             }
         }
+    }
+
+    companion object {
+        val DIFF_CALLBACK: DiffUtil.ItemCallback<EventEntity> =
+            object : DiffUtil.ItemCallback<EventEntity>() {
+                override fun areItemsTheSame(oldItem: EventEntity, newItem: EventEntity): Boolean {
+                    return oldItem.title == newItem.title
+                }
+
+                @SuppressLint("DiffUtilEquals")
+                override fun areContentsTheSame(
+                    oldItem: EventEntity,
+                    newItem: EventEntity
+                ): Boolean {
+                    return oldItem == newItem
+                }
+            }
     }
 }
 

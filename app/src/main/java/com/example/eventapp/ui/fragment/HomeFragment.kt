@@ -1,14 +1,15 @@
 package com.example.eventapp.ui.fragment
 
-
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,17 +17,20 @@ import com.example.eventapp.R
 import com.example.eventapp.ui.DetailActivity
 import com.example.eventapp.ui.adapter.EventAdapter
 import com.example.eventapp.ui.adapter.EventSmallAdapter
-import com.example.eventapp.ui.model.EventActiveModel
-import com.example.eventapp.ui.model.EventNonActiveModel
-import com.example.eventapp.ui.model.factory.EventActiveModelFactory
-import com.example.eventapp.ui.model.factory.EventNonActiveModelFactory
+import com.example.eventapp.ui.model.EventActiveAndNonActiveModel
+import com.example.eventapp.ui.model.factory.EventActiveAndNonActiveModelFactory
 import com.example.eventapp.utils.DialogUtil.showNoInternetDialog
 import networkCheck
 
-class HomeFragment : Fragment(), View.OnClickListener {
 
-    private lateinit var eventActiveModel: EventActiveModel
-    private lateinit var eventNonActiveModel: EventNonActiveModel
+class HomeFragment : Fragment() {
+
+    private val eventActiveAndNonActiveModel: EventActiveAndNonActiveModel by viewModels {
+        EventActiveAndNonActiveModelFactory.getInstance(requireActivity())
+    }
+
+    private lateinit var eventSoonAdapter: EventSmallAdapter
+    private lateinit var eventAdapter: EventAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,73 +42,63 @@ class HomeFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Inisialisasi ViewModel menggunakan factory
-        eventActiveModel = EventActiveModelFactory.getInstance(requireContext())
-            .create(EventActiveModel::class.java)
-
-        eventNonActiveModel = EventNonActiveModelFactory.getInstance(requireContext())
-            .create(EventNonActiveModel::class.java)
-
-        // Cek apakah ada koneksi internet
+        // Check internet connection
         if (networkCheck(requireContext())) {
-            // Jika ada koneksi internet, lakukan fetching data
             setupRecyclerViews(view)
             observeViewModels()
         } else {
-            // Jika tidak ada koneksi, tampilkan AlertDialog
-            val tvUpcomingEvent = view.findViewById<TextView>(R.id.tv_upcoming_event)
-            val tvFinishEvent = view.findViewById<TextView>(R.id.tv_finish_event)
-            tvUpcomingEvent.visibility = View.GONE
-            tvFinishEvent.visibility = View.GONE
             showNoInternetDialog(requireContext(), layoutInflater)
+            view.findViewById<TextView>(R.id.tv_upcoming_event).visibility = View.GONE
+            view.findViewById<TextView>(R.id.tv_finish_event).visibility = View.GONE
         }
     }
 
-
     private fun setupRecyclerViews(view: View) {
         val rvEventSoon = view.findViewById<RecyclerView>(R.id.rv_event_soon)
-        val rvEvent = view.findViewById<RecyclerView>(R.id.rv_event)
-
-        // Setup horizontal RecyclerView for "soon" events
         rvEventSoon.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
-        // Setup vertical RecyclerView for "regular" events
+        eventSoonAdapter = EventSmallAdapter(
+            onFavoriteClick = { event -> eventActiveAndNonActiveModel.saveEvent(event) },
+            onItemClick = { eventId -> navigateToDetail(eventId) }
+        )
+        rvEventSoon.adapter = eventSoonAdapter
+
+        val rvEvent = view.findViewById<RecyclerView>(R.id.rv_event)
         rvEvent.layoutManager = LinearLayoutManager(requireContext())
+        eventAdapter = EventAdapter(
+            onFavoriteClick = { event -> eventActiveAndNonActiveModel.deleteEvent(event) },
+            onItemClick = { eventId -> navigateToDetail(eventId) }
+        )
+        rvEvent.adapter = eventAdapter
     }
 
     private fun observeViewModels() {
+
         // Observe active events (upcoming)
-        eventActiveModel.listEvent.observe(viewLifecycleOwner, Observer { eventList ->
-            val eventSoonList = eventList.take(5)
-            val eventSoonAdapter = EventSmallAdapter(eventSoonList) { eventId ->
-                // Intent untuk pindah ke DetailActivity sambil membawa eventId
-                val intent = Intent(requireContext(), DetailActivity::class.java)
-                intent.putExtra("EVENT_ID", eventId)
-                startActivity(intent)
-            }
-            view?.findViewById<RecyclerView>(R.id.rv_event_soon)?.adapter = eventSoonAdapter
-        })
+        eventActiveAndNonActiveModel.listEventActive.observe(
+            viewLifecycleOwner,
+            Observer { eventList ->
+                eventSoonAdapter.submitList(eventList.take(5))
+                Log.d("LISTACTIVE", eventList.take(5).toString())// Menggunakan eventSoonAdapter
+            })
 
         // Observe non-active events (finished)
-        eventNonActiveModel.listEvent.observe(viewLifecycleOwner, Observer { eventList ->
-            val eventAdapter = EventAdapter(eventList) { eventId ->
-                // Intent untuk pindah ke DetailActivity sambil membawa eventId
-                val intent = Intent(requireContext(), DetailActivity::class.java)
-                intent.putExtra("EVENT_ID", eventId)
-                startActivity(intent)
-            }
-            view?.findViewById<RecyclerView>(R.id.rv_event)?.adapter = eventAdapter
-        })
+        eventActiveAndNonActiveModel.listEventNonActive.observe(
+            viewLifecycleOwner,
+            Observer { eventList ->
+                eventAdapter.submitList(eventList)  // Menggunakan eventAdapter
+                Log.d("LISTNONACTIVE", eventList.take(5).toString())
+            })
 
-        // Observe loading states from both models
-        eventActiveModel.isLoading.observe(viewLifecycleOwner, Observer { updateLoadingState() })
-        eventNonActiveModel.isLoading.observe(viewLifecycleOwner, Observer { updateLoadingState() })
+        // Observe loading states from the model
+        eventActiveAndNonActiveModel.isLoading.observe(
+            viewLifecycleOwner,
+            Observer { updateLoadingState() })
     }
 
     private fun updateLoadingState() {
-        val isLoadingActive = eventActiveModel.isLoading.value ?: false
-        val isLoadingNonActive = eventNonActiveModel.isLoading.value ?: false
+        val isLoading = eventActiveAndNonActiveModel.isLoading.value ?: false
 
         val progressBar = view?.findViewById<View>(R.id.includeProgressBar)
             ?.findViewById<ProgressBar>(R.id.progressBar)
@@ -113,8 +107,8 @@ class HomeFragment : Fragment(), View.OnClickListener {
         val tvUpcomingEvent = view?.findViewById<TextView>(R.id.tv_upcoming_event)
         val tvFinishEvent = view?.findViewById<TextView>(R.id.tv_finish_event)
 
-        // Show loading if either of the ViewModel is loading
-        if (isLoadingActive || isLoadingNonActive) {
+        // Show loading if model is loading
+        if (isLoading) {
             progressBar?.visibility = View.VISIBLE
             rvEvent?.visibility = View.GONE
             rvEventSoon?.visibility = View.GONE
@@ -129,7 +123,10 @@ class HomeFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    override fun onClick(p0: View?) {
-        // Handle click events here
+    private fun navigateToDetail(eventId: Int) {
+        val intent = Intent(requireContext(), DetailActivity::class.java).apply {
+            putExtra("EVENT_ID", eventId)
+        }
+        startActivity(intent)
     }
 }

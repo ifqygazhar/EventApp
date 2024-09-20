@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.eventapp.data.EventRepository
 import com.example.eventapp.data.Result
-import com.example.eventapp.data.remote.response.ListEventsItem
+import com.example.eventapp.data.local.entity.EventEntity
 
 class EventActiveModel(private val eventRepository: EventRepository) : ViewModel() {
 
@@ -14,8 +14,8 @@ class EventActiveModel(private val eventRepository: EventRepository) : ViewModel
         private const val TAG = "EventActiveModel"
     }
 
-    private val _listEvent = MutableLiveData<List<ListEventsItem>>()
-    val listEvent: LiveData<List<ListEventsItem>> = _listEvent
+    private val _listEvent = MutableLiveData<List<EventEntity>>()
+    val listEvent: LiveData<List<EventEntity>> = _listEvent
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -41,5 +41,14 @@ class EventActiveModel(private val eventRepository: EventRepository) : ViewModel
                 }
             }
         }
+    }
+
+
+    fun saveEvent(event: EventEntity) {
+        eventRepository.setEventFavorite(event, true)
+    }
+
+    fun deleteEvent(event: EventEntity) {
+        eventRepository.setEventFavorite(event, false)
     }
 }

@@ -1,20 +1,25 @@
 package com.example.eventapp.ui.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eventapp.R
-import com.example.eventapp.data.remote.response.ListEventsItem
+import com.example.eventapp.data.local.entity.EventEntity
+import com.example.eventapp.ui.adapter.EventSmallAdapter.EventSmallViewHolder
 import com.example.eventapp.utils.LoadImage
+import com.google.android.material.button.MaterialButton
 
 class EventSmallAdapter(
-    private var eventList: List<ListEventsItem>,
+    private val onFavoriteClick: (EventEntity) -> Unit,
     private val onItemClick: (Int) -> Unit
 ) :
-    RecyclerView.Adapter<EventSmallAdapter.EventSmallViewHolder>() {
+    ListAdapter<EventEntity, EventSmallViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventSmallViewHolder {
         val view =
@@ -23,11 +28,20 @@ class EventSmallAdapter(
     }
 
     override fun onBindViewHolder(holder: EventSmallViewHolder, position: Int) {
-        val event = eventList[position]
+        val event = getItem(position)
         holder.bind(event)
-    }
 
-    override fun getItemCount(): Int = eventList.size
+        val btnFavorite = holder.itemView.findViewById<MaterialButton>(R.id.btnFavorite)
+
+        if (event.isFavorite) {
+            btnFavorite.setIconResource(R.drawable.ic_favorite)
+        } else {
+            btnFavorite.setIconResource(R.drawable.ic_no_favorite)
+        }
+        btnFavorite.setOnClickListener {
+            onFavoriteClick(event)
+        }
+    }
 
     class EventSmallViewHolder(itemView: View, private val onItemClick: (Int) -> Unit) :
         RecyclerView.ViewHolder(itemView) {
@@ -36,10 +50,10 @@ class EventSmallAdapter(
         private val tvCity = itemView.findViewById<TextView>(R.id.tvCity)
         private val ivEventCover = itemView.findViewById<ImageView>(R.id.ivPicture)
 
-        fun bind(event: ListEventsItem) {
-            tvName.text = event.name
-            tvOwner.text = event.ownerName
-            tvCity.text = event.cityName
+        fun bind(event: EventEntity) {
+            tvName.text = event.title
+            tvOwner.text = event.owner
+            tvCity.text = event.city
 
             LoadImage.load(itemView.context, ivEventCover, event.mediaCover, R.color.placeholder)
 
@@ -48,5 +62,22 @@ class EventSmallAdapter(
                 onItemClick(event.id)
             }
         }
+    }
+
+    companion object {
+        val DIFF_CALLBACK: DiffUtil.ItemCallback<EventEntity> =
+            object : DiffUtil.ItemCallback<EventEntity>() {
+                override fun areItemsTheSame(oldItem: EventEntity, newItem: EventEntity): Boolean {
+                    return oldItem.title == newItem.title
+                }
+
+                @SuppressLint("DiffUtilEquals")
+                override fun areContentsTheSame(
+                    oldItem: EventEntity,
+                    newItem: EventEntity
+                ): Boolean {
+                    return oldItem == newItem
+                }
+            }
     }
 }

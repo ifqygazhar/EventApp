@@ -1,6 +1,5 @@
 package com.example.eventapp.ui
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
@@ -77,7 +76,7 @@ class SearchActivity : AppCompatActivity() {
             } else {
                 binding.imgEmpty.visibility = View.GONE
                 binding.rvEventSearch.visibility = View.VISIBLE
-                eventAdapter.setData(eventList)
+                //eventAdapter.setData(eventList)
             }
         }
 
@@ -95,12 +94,12 @@ class SearchActivity : AppCompatActivity() {
 
     // Set up RecyclerView with adapter and layout manager
     private fun setupRecyclerView() {
-        eventAdapter = EventAdapter(emptyList()) { eventId ->
-            // Intent untuk pindah ke DetailActivity sambil membawa eventId
-            val intent = Intent(this, DetailActivity::class.java)
-            intent.putExtra("EVENT_ID", eventId)
-            startActivity(intent)
-        }
+//        eventAdapter = EventAdapter(emptyList()) { eventId ->
+//            // Intent untuk pindah ke DetailActivity sambil membawa eventId
+//            val intent = Intent(this, DetailActivity::class.java)
+//            intent.putExtra("EVENT_ID", eventId)
+//            startActivity(intent)
+//        }
 
         val layoutManager = LinearLayoutManager(this)
         binding.rvEventSearch.layoutManager = layoutManager
