@@ -35,11 +35,8 @@ interface EventDao {
     @Query("DELETE FROM events WHERE favorite = 0 AND event_status = 0")
     fun deleteFinishedAll()
 
-    @Query("SELECT EXISTS(SELECT * FROM events WHERE id = :eventId AND event_status = 0 AND favorite = 1)")
-    fun isEventNonActiveFavorite(eventId: Int): Boolean
-    
-    @Query("SELECT EXISTS(SELECT * FROM events WHERE id = :eventId AND event_status = 1 AND favorite = 1)")
-    fun isEventActiveFavorite(eventId: Int): Boolean
+    @Query("SELECT EXISTS(SELECT * FROM events WHERE id = :eventId AND favorite = 1)")
+    fun isEventFavorite(eventId: Int): Boolean
 
 
 }

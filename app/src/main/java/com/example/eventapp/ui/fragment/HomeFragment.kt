@@ -14,6 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eventapp.R
+import com.example.eventapp.data.local.entity.EventEntity
 import com.example.eventapp.ui.DetailActivity
 import com.example.eventapp.ui.adapter.EventAdapter
 import com.example.eventapp.ui.adapter.EventSmallAdapter
@@ -59,7 +60,7 @@ class HomeFragment : Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
         eventSoonAdapter = EventSmallAdapter(
-            onFavoriteClick = { event -> eventActiveAndNonActiveModel.saveEvent(event) },
+            onFavoriteClick = { event -> toggleFavorite(event) },
             onItemClick = { eventId -> navigateToDetail(eventId) }
         )
         rvEventSoon.adapter = eventSoonAdapter
@@ -67,7 +68,7 @@ class HomeFragment : Fragment() {
         val rvEvent = view.findViewById<RecyclerView>(R.id.rv_event)
         rvEvent.layoutManager = LinearLayoutManager(requireContext())
         eventAdapter = EventAdapter(
-            onFavoriteClick = { event -> eventActiveAndNonActiveModel.deleteEvent(event) },
+            onFavoriteClick = { event -> toggleFavorite(event) },
             onItemClick = { eventId -> navigateToDetail(eventId) }
         )
         rvEvent.adapter = eventAdapter
@@ -120,6 +121,14 @@ class HomeFragment : Fragment() {
             rvEventSoon?.visibility = View.VISIBLE
             tvUpcomingEvent?.visibility = View.VISIBLE
             tvFinishEvent?.visibility = View.VISIBLE
+        }
+    }
+
+    private fun toggleFavorite(event: EventEntity) {
+        if (event.isFavorite) {
+            eventActiveAndNonActiveModel.deleteEvent(event)
+        } else {
+            eventActiveAndNonActiveModel.saveEvent(event)
         }
     }
 
