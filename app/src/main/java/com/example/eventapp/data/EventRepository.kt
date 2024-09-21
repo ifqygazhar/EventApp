@@ -34,7 +34,7 @@ class EventRepository private constructor(
                         val eventList = ArrayList<EventEntity>()
                         appExecutors.diskIO.execute {
                             events?.forEach { eventItem ->
-                                val isFavorite = eventDao.isEventFavorite(eventItem.id)
+                                val isFavorite = eventDao.isEventActiveFavorite(eventItem.id)
                                 val event = EventEntity(
                                     eventItem.id,
                                     eventItem.mediaCover,
@@ -85,7 +85,7 @@ class EventRepository private constructor(
                         val eventList = ArrayList<EventEntity>()
                         appExecutors.diskIO.execute {
                             events?.forEach { eventItem ->
-                                val isFavorite = eventDao.isEventFavorite(eventItem.id)
+                                val isFavorite = eventDao.isEventNonActiveFavorite(eventItem.id)
                                 val event = EventEntity(
                                     eventItem.id,
                                     eventItem.mediaCover,
