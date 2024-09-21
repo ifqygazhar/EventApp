@@ -6,14 +6,20 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.example.eventapp.R
+import com.example.eventapp.data.local.pref.SettingPreferences
+import com.example.eventapp.data.local.pref.dataStore
 import com.example.eventapp.databinding.ActivityMainBinding
 import com.example.eventapp.ui.fragment.EventActiveFragment
 import com.example.eventapp.ui.fragment.EventNonActiveFragment
 import com.example.eventapp.ui.fragment.FavoriteFragment
 import com.example.eventapp.ui.fragment.HomeFragment
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -30,6 +36,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.includeToolbar.toolbar)
+
+        loadThemeSetting()
 
         // Jika ada savedInstanceState, ambil fragment yang dipilih sebelumnya
         if (savedInstanceState != null) {
@@ -99,7 +107,25 @@ class MainActivity : AppCompatActivity() {
                 true
             }
 
+            R.id.menu_setting -> {
+                val intent = Intent(this, SettingActivity::class.java)
+                startActivity(intent)
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun loadThemeSetting() {
+        val pref = SettingPreferences.getInstance(application.dataStore)
+        lifecycleScope.launch {
+            val isDarkModeActive = pref.getThemeSetting().first()
+            if (isDarkModeActive) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
         }
     }
 }

@@ -3,18 +3,19 @@
     <item
         android:id="@+id/navigation_home"
         android:title="@string/menu_home"
-        android:icon="@drawable/ic_baseline_home_filled_24"/>
+        android:icon="@drawable/ic_baseline_home_filled_24" />
     <item
         android:id="@+id/navigation_active"
         android:title="@string/menu_active"
-        android:icon="@drawable/ic_calendar_check"/>
+        android:icon="@drawable/ic_calendar_check" />
     <item
         android:id="@+id/navigation_nonActive"
         android:title="@string/menu_nonactive"
-        android:icon="@drawable/ic_calendar_cross"/>
+        android:icon="@drawable/ic_calendar_cross" />
     <item
         android:id="@+id/navigation_favorite"
         android:title="@string/favorite"
-        android:icon="@drawable/ic_favorite"/>
+        android:icon="@drawable/ic_favorite" />
+
 
 </menu>
