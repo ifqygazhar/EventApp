@@ -11,8 +11,6 @@ import com.example.eventapp.data.local.entity.EventEntity
 
 @Dao
 interface EventDao {
-    @Query("SELECT * FROM events ORDER BY beginTime DESC")
-    fun getEvents(): LiveData<List<EventEntity>>
 
     @Query("SELECT * FROM events where event_status = 1 ORDER BY beginTime DESC")
     fun getEventActive(): LiveData<List<EventEntity>>
@@ -20,7 +18,7 @@ interface EventDao {
     @Query("SELECT * FROM events where event_status = 0 ORDER BY beginTime DESC")
     fun getEventNonActive(): LiveData<List<EventEntity>>
 
-    @Query("SELECT * FROM events where favorite = 1")
+    @Query("SELECT * FROM events where favorite = 1 ORDER BY beginTime DESC")
     fun getEventsFavorite(): LiveData<List<EventEntity>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)

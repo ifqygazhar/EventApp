@@ -1,5 +1,6 @@
 package com.example.eventapp.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
@@ -12,7 +13,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.eventapp.R
 import com.example.eventapp.databinding.ActivitySearchBinding
-import com.example.eventapp.ui.adapter.EventAdapter
+import com.example.eventapp.ui.adapter.EventSearchAdapter
 import com.example.eventapp.ui.model.EventSearchModel
 import com.example.eventapp.ui.model.factory.EventSearchModelFactory
 import com.example.eventapp.utils.DialogUtil
@@ -21,7 +22,7 @@ import networkCheck
 class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
     private lateinit var eventSearchModel: EventSearchModel
-    private lateinit var eventAdapter: EventAdapter
+    private lateinit var eventSearchAdapter: EventSearchAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,7 +77,7 @@ class SearchActivity : AppCompatActivity() {
             } else {
                 binding.imgEmpty.visibility = View.GONE
                 binding.rvEventSearch.visibility = View.VISIBLE
-                //eventAdapter.setData(eventList)
+                eventSearchAdapter.setData(eventList)
             }
         }
 
@@ -84,7 +85,6 @@ class SearchActivity : AppCompatActivity() {
             showLoading(it)
         }
 
-        // Handle window insets for padding adjustments
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -92,23 +92,20 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    // Set up RecyclerView with adapter and layout manager
     private fun setupRecyclerView() {
-//        eventAdapter = EventAdapter(emptyList()) { eventId ->
-//            // Intent untuk pindah ke DetailActivity sambil membawa eventId
-//            val intent = Intent(this, DetailActivity::class.java)
-//            intent.putExtra("EVENT_ID", eventId)
-//            startActivity(intent)
-//        }
+        eventSearchAdapter = EventSearchAdapter(emptyList()) { eventId ->
+            val intent = Intent(this, DetailActivity::class.java)
+            intent.putExtra("EVENT_ID", eventId)
+            startActivity(intent)
+        }
 
         val layoutManager = LinearLayoutManager(this)
         binding.rvEventSearch.layoutManager = layoutManager
         val itemDecoration = DividerItemDecoration(this, layoutManager.orientation)
         binding.rvEventSearch.addItemDecoration(itemDecoration)
-        binding.rvEventSearch.adapter = eventAdapter
+        binding.rvEventSearch.adapter = eventSearchAdapter
     }
 
-    // Show loading indicator while fetching data
     private fun showLoading(isLoading: Boolean) {
         if (isLoading) {
             binding.includeProgressBar.progressBar.visibility = View.VISIBLE

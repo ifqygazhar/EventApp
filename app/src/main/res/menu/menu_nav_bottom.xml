@@ -12,4 +12,9 @@
         android:id="@+id/navigation_nonActive"
         android:title="@string/menu_nonactive"
         android:icon="@drawable/ic_calendar_cross"/>
+    <item
+        android:id="@+id/navigation_favorite"
+        android:title="@string/favorite"
+        android:icon="@drawable/ic_favorite"/>
+
 </menu>

@@ -157,6 +157,10 @@ class EventRepository private constructor(
         }
     }
 
+    fun getEventFavorite(): LiveData<List<EventEntity>> {
+        return eventDao.getEventsFavorite()
+    }
+
 
     companion object {
         @Volatile

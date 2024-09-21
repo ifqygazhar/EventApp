@@ -12,6 +12,7 @@ import com.example.eventapp.R
 import com.example.eventapp.databinding.ActivityMainBinding
 import com.example.eventapp.ui.fragment.EventActiveFragment
 import com.example.eventapp.ui.fragment.EventNonActiveFragment
+import com.example.eventapp.ui.fragment.FavoriteFragment
 import com.example.eventapp.ui.fragment.HomeFragment
 
 class MainActivity : AppCompatActivity() {
@@ -76,6 +77,7 @@ class MainActivity : AppCompatActivity() {
             0 -> HomeFragment()
             1 -> EventActiveFragment()
             2 -> EventNonActiveFragment()
+            3 -> FavoriteFragment()
             else -> HomeFragment()
         }
 
