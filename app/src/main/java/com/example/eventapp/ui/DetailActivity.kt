@@ -11,14 +11,15 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.eventapp.R
 import com.example.eventapp.databinding.ActivityDetailBinding
 import com.example.eventapp.ui.model.EventDetailModel
+import com.example.eventapp.ui.model.factory.EventDetailModelFactory
 import com.example.eventapp.utils.LoadImage
 
 
@@ -26,8 +27,7 @@ class DetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailBinding
 
-    // Menggunakan viewModels untuk mendapatkan instance ViewModel
-    private val eventDetailModel: EventDetailModel by viewModels()
+    private lateinit var eventDetailModel: EventDetailModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +36,8 @@ class DetailActivity : AppCompatActivity() {
         // Inflate layout dengan binding
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val factory = EventDetailModelFactory.getInstance(this)
+        eventDetailModel = ViewModelProvider(this, factory)[EventDetailModel::class.java]
 
         // Set toolbar dengan back button
         setSupportActionBar(binding.includeToolbar.toolbar)

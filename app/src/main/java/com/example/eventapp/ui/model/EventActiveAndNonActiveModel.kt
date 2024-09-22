@@ -66,11 +66,11 @@ class EventActiveAndNonActiveModel(private val eventRepository: EventRepository)
     }
 
 
-    fun saveEvent(event: EventEntity) {
+    suspend fun saveEvent(event: EventEntity) {
         eventRepository.setEventFavorite(event, true)
     }
 
-    fun deleteEvent(event: EventEntity) {
+    suspend fun deleteEvent(event: EventEntity) {
         eventRepository.setEventFavorite(event, false)
     }
 }

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eventapp.R
@@ -16,6 +17,7 @@ import com.example.eventapp.ui.DetailActivity
 import com.example.eventapp.ui.adapter.EventAdapter
 import com.example.eventapp.ui.model.EventFavoriteModel
 import com.example.eventapp.ui.model.factory.EventFavoriteModelFactory
+import kotlinx.coroutines.launch
 
 
 class FavoriteFragment : Fragment() {
@@ -38,20 +40,26 @@ class FavoriteFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView(view)
-        observeViewModels()
+        viewLifecycleOwner.lifecycleScope.launch {
+            observeViewModels()
+        }
     }
 
     private fun setupRecyclerView(view: View) {
         val rvEvent = view.findViewById<RecyclerView>(R.id.rv_favorite)
         rvEvent.layoutManager = LinearLayoutManager(requireContext())
         eventAdapter = EventAdapter(
-            onFavoriteClick = { event -> toggleFavorite(event) },
+            onFavoriteClick = { event ->
+                viewLifecycleOwner.lifecycleScope.launch {
+                    toggleFavorite(event)
+                }
+            },
             onItemClick = { eventId -> navigateToDetail(eventId) }
         )
         rvEvent.adapter = eventAdapter
     }
 
-    private fun observeViewModels() {
+    private suspend fun observeViewModels() {
         val emptyView = view?.findViewById<View>(R.id.imgEmpty)
         val recyclerView = view?.findViewById<RecyclerView>(R.id.rv_event_nonactive)
         eventFavoriteModel.getEventFavorite().observe(viewLifecycleOwner) { eventList ->
@@ -87,7 +95,7 @@ class FavoriteFragment : Fragment() {
     }
 
 
-    private fun toggleFavorite(event: EventEntity) {
+    private suspend fun toggleFavorite(event: EventEntity) {
         if (event.isFavorite) {
             eventFavoriteModel.deleteEvent(event)
         } else {

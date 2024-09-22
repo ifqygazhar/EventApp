@@ -9,6 +9,7 @@ import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eventapp.R
@@ -18,6 +19,7 @@ import com.example.eventapp.ui.adapter.EventAdapter
 import com.example.eventapp.ui.model.EventNonActiveModel
 import com.example.eventapp.ui.model.factory.EventNonActiveModelFactory
 import com.example.eventapp.utils.DialogUtil.showNoInternetDialog
+import kotlinx.coroutines.launch
 import networkCheck
 
 
@@ -55,7 +57,11 @@ class EventNonActiveFragment : Fragment() {
         val rvEvent = view.findViewById<RecyclerView>(R.id.rv_event_nonactive)
         rvEvent.layoutManager = LinearLayoutManager(requireContext())
         eventAdapter = EventAdapter(
-            onFavoriteClick = { event -> toggleFavorite(event) },
+            onFavoriteClick = { event ->
+                viewLifecycleOwner.lifecycleScope.launch {
+                    toggleFavorite(event)
+                }
+            },
             onItemClick = { eventId -> navigateToDetail(eventId) }
         )
         rvEvent.adapter = eventAdapter
@@ -86,7 +92,7 @@ class EventNonActiveFragment : Fragment() {
     }
 
 
-    private fun toggleFavorite(event: EventEntity) {
+    private suspend fun toggleFavorite(event: EventEntity) {
         if (event.isFavorite) {
             eventNonActiveModel.deleteEvent(event)
         } else {

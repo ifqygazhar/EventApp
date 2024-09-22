@@ -4,59 +4,42 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.eventapp.data.EventRepository
+import com.example.eventapp.data.Result
 import com.example.eventapp.data.remote.response.EventDetailResponse
-import com.example.eventapp.data.remote.retrofit.ApiConfig
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
-class EventDetailModel : ViewModel() {
 
+class EventDetailModel(private val eventRepository: EventRepository) : ViewModel() {
     companion object {
         private const val TAG = "EventDetailModel"
     }
 
-    // LiveData untuk menyimpan data detail event
+    // LiveData untuk menampung event detail
     private val _eventDetail = MutableLiveData<EventDetailResponse>()
     val eventDetail: LiveData<EventDetailResponse> = _eventDetail
 
-    // LiveData untuk status loading
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    // LiveData untuk error message
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
 
-    // Fungsi untuk mengambil detail event berdasarkan id
     fun fetchEventDetail(id: Int) {
-        _isLoading.value = true // Memulai proses loading
-        val client = ApiConfig.getApiService().getEventDetail(id)
+        _isLoading.value = true
 
-        client.enqueue(object : Callback<EventDetailResponse> {
-            override fun onResponse(
-                call: Call<EventDetailResponse>,
-                response: Response<EventDetailResponse>
-            ) {
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    val responseBody = response.body()
-                    if (responseBody != null && !responseBody.error) {
-                        _eventDetail.value = responseBody!!
-                    } else {
-                        _errorMessage.value = responseBody?.message ?: "Unknown error"
-                    }
-                } else {
-                    Log.e(TAG, "onFailure: ${response.message()}")
-                    _errorMessage.value = "Failed to load event details: ${response.message()}"
+        eventRepository.fetchEventDetail(id).observeForever { result ->
+            when (result) {
+                is Result.Loading -> _isLoading.value = true
+                is Result.Success -> {
+                    _isLoading.value = false
+                    _eventDetail.value = result.data
+                }
+
+                is Result.Error -> {
+                    _isLoading.value = false
+                    Log.e(TAG, "Error: ${result.error}")
                 }
             }
-
-            override fun onFailure(call: Call<EventDetailResponse>, t: Throwable) {
-                _isLoading.value = false
-                _errorMessage.value = "Error: ${t.message.toString()}"
-                Log.e(TAG, "onFailure: ${t.message.toString()}")
-            }
-        })
+        }
     }
 }
