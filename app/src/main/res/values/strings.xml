@@ -24,4 +24,5 @@
     <string name="favorite">Favorite</string>
     <string name="setting">Setting</string>
     <string name="dark_mode">Dark Mode</string>
+    <string name="daily_reminder">Daily Reminder</string>
 </resources>

@@ -69,6 +69,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
+    implementation(libs.androidx.work.runtime)
+
     //room
     implementation(libs.androidx.room.runtime)
     ksp(libs.room.compiler)

@@ -1,8 +1,12 @@
 package com.example.eventapp.ui
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import android.widget.CompoundButton
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
@@ -36,6 +40,11 @@ class SettingActivity : AppCompatActivity() {
         val settingViewModel = ViewModelProvider(this, SettingModelFactory(pref)).get(
             SettingModel::class.java
         )
+
+        if (Build.VERSION.SDK_INT >= 33) {
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+
         settingViewModel.getThemeSettings().observe(this) { isDarkModeActive: Boolean ->
             if (isDarkModeActive) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -50,6 +59,20 @@ class SettingActivity : AppCompatActivity() {
             settingViewModel.saveThemeSetting(isChecked)
         }
 
+
+        settingViewModel.getReminderSetting().observe(this) { isReminderActive: Boolean ->
+            binding.switchReminder.isChecked = isReminderActive
+        }
+
+        binding.switchReminder.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            settingViewModel.saveReminderSetting(isChecked)
+            if (isChecked) {
+                settingViewModel.scheduleDailyReminder(applicationContext)
+            } else {
+                settingViewModel.cancelDailyReminder(applicationContext)
+            }
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(
@@ -61,4 +84,15 @@ class SettingActivity : AppCompatActivity() {
             insets
         }
     }
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                Toast.makeText(this, "Notifications permission granted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Notifications permission rejected", Toast.LENGTH_SHORT).show()
+            }
+        }
 }
